@@ -2,7 +2,7 @@ import React from 'react'
 
 
 export default function Form(props) {
-    const {values, update,submit,onboxChange } = props
+    const {values, update,submit,onboxChange,disabled, errors } = props
 
     const onChange = evt => {
         const {name, value} = evt.target
@@ -26,6 +26,17 @@ export default function Form(props) {
             </div>
             <div>
                 <h4>General information</h4>
+                <div>
+                <div className='errors'>
+                    <div>{errors.username}</div>
+                    <div>{errors.email}</div>
+                    <div>{errors.role}</div>
+                    <div>{errors.civil}</div>
+                </div>
+                <button disabled={disabled}
+                 >Done
+                 </button>
+                </div>
 
                 <label>Username:&nbsp;
                     <input
@@ -103,10 +114,6 @@ export default function Form(props) {
                     />
                     </label>
                 </div>
-                <button 
-                 disabled={!values.username|| !values.email || !values.role ? true : false
-                }>Done</button>
-            
             </div>
 
         </form>

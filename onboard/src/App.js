@@ -1,5 +1,7 @@
 import React, {useState,useEffect} from 'react';
 import axios from 'axios'
+import * as yup from 'yup'
+import formSchema from './validation/formSchema'
 import './App.css';
 import Form from './Form'
 import Friend from './Friend'
@@ -17,11 +19,23 @@ const initialFormValues = {
     coding:false,
   }
 }
+const initialFormErrors = {
+  username: '',
+  email: '',
+  role: '',
+  civil: '',
+}
+
+const initialDisabled = true
 
 function App() {
   const [friends,  setFriends] = useState([])
   
   const [formValues,setFormValue] = useState(initialFormValues)
+
+  const [formErrors, setFormErrors] = useState(initialFormErrors)
+
+  const [disabled, setDisabled] = useState(initialDisabled)
 
 
   const postNewFriend = newFriend => {
@@ -47,8 +61,31 @@ function App() {
     })
   }
   const updateForm =(inputName, inputValue) => {
-    setFormValue({...formValues,[inputName]:inputValue})
-  }
+
+    yup
+    .reach(formSchema, inputName)
+    
+    .validate(inputValue)
+    
+    .then(valid => {
+      setFormErrors({
+        ...formErrors,
+        [inputName]: ""
+      });
+    })
+    
+    .catch(err => {
+      setFormErrors({
+        ...formErrors,
+        [inputName]: err.errors[0]
+      });
+    });
+    setFormValue({
+    ...formValues,
+    [inputName]: inputValue
+    });
+};
+  
 
   const submitForm =() => {
     const newFriend = {
@@ -58,12 +95,20 @@ function App() {
       civil: formValues.civil,
       hobbies:Object.keys(formValues.hobbies).filter(hob => formValues.hobbies[hob]),
     }
-    if (!newFriend.username || !newFriend.email) return
+    
 
     postNewFriend(newFriend)
 
     
   }
+ 
+
+  useEffect( () => {
+    formSchema.isValid(formValues)
+      .then(valid => {
+        setDisabled(!valid);
+      })
+  },[formValues])
   
   return (
     <div className='container'>
@@ -75,6 +120,8 @@ function App() {
         update={ updateForm } 
         submit={submitForm}
         onboxChange={checkboxChange}
+        disabled={disabled}
+        errors={formErrors}
         
         />
       {
