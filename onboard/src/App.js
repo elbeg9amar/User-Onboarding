@@ -37,6 +37,8 @@ function App() {
 
   const [disabled, setDisabled] = useState(initialDisabled)
 
+  const [user, setUser]=useState([])
+
 
   const postNewFriend = newFriend => {
     axios.post('https://reqres.in/api/users',newFriend)
@@ -96,7 +98,7 @@ function App() {
       hobbies:Object.keys(formValues.hobbies).filter(hob => formValues.hobbies[hob]),
     }
     
-
+    setUser(...user,newFriend)
     postNewFriend(newFriend)
 
     
@@ -113,7 +115,7 @@ function App() {
   return (
     <div className='container'>
         <header><h1>Friend App</h1></header>
-
+        <pre>{JSON.stringify(user)}</pre>
         <Form 
         
         values={formValues}
