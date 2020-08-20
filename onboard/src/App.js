@@ -1,6 +1,5 @@
 import React, {useState,useEffect} from 'react';
-
-import { v4 as uuid } from 'uuid'
+import axios from 'axios'
 import './App.css';
 import Form from './Form'
 import Friend from './Friend'
@@ -24,6 +23,21 @@ function App() {
   
   const [formValues,setFormValue] = useState(initialFormValues)
 
+
+  const postNewFriend = newFriend => {
+    axios.post('https://reqres.in/api/users',newFriend)
+    .then(res => {
+      setFriends([...friends,res.data])
+      console.log(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+    .finally( () => {
+      setFormValue(initialFormValues)
+    })
+  }
+
   const checkboxChange = (name,isChecked) => {
     setFormValue({
       ...formValues,hobbies: {
@@ -38,7 +52,6 @@ function App() {
 
   const submitForm =() => {
     const newFriend = {
-      id: uuid(),
       username: formValues.username.trim(),
       email: formValues.email.trim(),
       role: formValues.role,
@@ -47,9 +60,9 @@ function App() {
     }
     if (!newFriend.username || !newFriend.email) return
 
-    setFriends([...friends,newFriend])
+    postNewFriend(newFriend)
 
-    return setFormValue(initialFormValues)
+    
   }
   
   return (
